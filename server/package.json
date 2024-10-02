@@ -1,0 +1,26 @@
+{
+  "name": "nodejs-token-server",
+  "version": "1.0.0",
+  "description": "A Node JS backend app acting as a proxy service for ArcGIS application credentials",
+  "main": "./index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Calvin Opiti",
+  "license": "ISC",
+  "dependencies": {
+    "@esri/arcgis-rest-auth": "^3.7.0",
+    "@esri/arcgis-rest-request": "^4.2.3",
+    "cors": "^2.8.5",
+    "cross-fetch": "^4.0.0",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "express-session": "^1.18.0",
+    "isomorphic-form-data": "^2.0.0",
+    "session-file-store": "^1.5.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.1.7"
+  }
+}
