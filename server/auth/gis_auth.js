@@ -111,8 +111,8 @@ function errorResponse(errorCode, errorMessage) {
     error: {
       code: errorCode,
       error: "invalid_server_response",
-      error_description: "Invalid server response" + errorMessage,
-      message: "Invalid server response" + errorMessage,
+      error_description: "Invalid server response - " + errorMessage,
+      message: "Invalid server response - " + errorMessage,
       details: [],
     },
   };
