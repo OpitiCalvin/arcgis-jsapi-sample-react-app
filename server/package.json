@@ -4,7 +4,8 @@
   "description": "A Node JS backend app acting as a proxy service for ArcGIS application credentials",
   "main": "./index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "node index.js"
   },
   "author": "Calvin Opiti",
   "license": "ISC",
