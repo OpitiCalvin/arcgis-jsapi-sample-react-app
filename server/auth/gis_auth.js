@@ -5,8 +5,8 @@ const fs = require("fs");
 const fetch = require("cross-fetch");
 const formData = require("isomorphic-form-data");
 const arcgisRestRequest = require("@esri/arcgis-rest-request");
-const { ApplicationSession } = require("@esri/arcgis-rest-auth");
-// const { queryDemographicData } = require("@esri/arcgis-rest-demographics");
+// const { ApplicationSession } = require("@esri/arcgis-rest-auth");
+const { ApplicationCredentialsManager } = require("@esri/arcgis-rest-request");
 
 arcgisRestRequest.setDefaultRequestOptions({ fetch, formData });
 require("dotenv").config();
@@ -23,9 +23,10 @@ const { error } = require("console");
 function cacheResponse(arcgisServerResponse) {
   if (!isArcGISError(arcgisServerResponse)) {
     // determine Unix time in milliseconds when this token will expire
+    // TODO: Check on expiry date computation
     arcgisServerResponse.expireDate =
-      parseInt(arcgisServerResponse.expires_in) * 1000 + Date.now();
-    arcgisServerResponse.appTokenBaseURL = configuration.appTokenBaseURL;
+      (parseInt(arcgisServerResponse.expires_in) * 1000 * 60) + Date.now();
+    arcgisServerResponse.appTokenBaseURL = process.env.APP_TOKEN_BASE_URI;
     arcgisServerResponse.arcgisUserId = process.env.ARCGIS_USER_ID;
 
     // save JSON response in a local file
@@ -68,18 +69,18 @@ function getCachedToken() {
           if (cachedToken === null) {
             reject(new Error("Invalid token."));
           } else {
-            // @TODO determine if this token is still good or expired
-            const now = new Date();
-            const expires = cachedToken.expireDate;
-            const dateExpires = new Date(expires);
-            const timeDiff = cachedToken.expireDate - Date.now();
+            // // @TODO determine if this token is still good or expired
+            // const now = new Date();
+            // const expires = cachedToken.expireDate;
+            // const dateExpires = new Date(expires);
+            // const timeDiff = cachedToken.expireDate - Date.now();
+            // const timeDiffStr =
+            // Math.floor(timeDiff / (1000 * 60 * 60)) +
+            // ":" +
+            // (Math.floor(timeDiff / (1000 * 60)) % 60) +
+            // ":" +
+            // (Math.floor(timeDiff / 1000) % 60);
             const isExpired = Date.now() > cachedToken.expireDate;
-            const timeDiffStr =
-              Math.floor(timeDiff / (1000 * 60 * 60)) +
-              ":" +
-              (Math.floor(timeDiff / (1000 * 60)) % 60) +
-              ":" +
-              (Math.floor(timeDiff / 1000) % 60);
             if (isExpired) {
               reject(new Error("Token expired."));
             } else {
@@ -142,23 +143,30 @@ function isArcGISError(arcgisServerResponse) {
 function requestTokenwithAuth() {
   return new Promise(function (resolve, reject) {
     const arcgisTokenUrl =
-      configuration.appTokenBaseURL + configuration.appTokenPath;
-    const session = new ApplicationSession({
+      process.env.APP_TOKEN_BASE_URI + process.env.APP_TOKEN_PATH;
+    // const session = new ApplicationSession({
+    //   clientId: process.env.CLIENT_ID,
+    //   clientSecret: process.env.CLIENT_SECRET,
+    //   duration: process.env.TOKEN_EXPIRATION_MINUTES,
+    // });
+    const session = ApplicationCredentialsManager.fromCredentials({
       clientId: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      duration: configuration.tokenExpirationMinutes,
+      duration: process.env.TOKEN_EXPIRATION_MINUTES,
+      portal: process.env.APP_TOKEN_BASE_URI,
     });
     session
-      .getToken(arcgisTokenUrl)
+      .refreshToken()
       .then(function (response) {
         // remember the token and when it expires
         const completeResponse = cacheResponse({
           access_token: response,
-          expires_in: configuration.tokenExpirationMinutes * 60,
+          expires_in: process.env.TOKEN_EXPIRATION_MINUTES,
         });
         resolve(completeResponse);
       })
       .catch(function (error) {
+        console.log("get token error");
         reject(error);
       });
   });
@@ -175,13 +183,15 @@ function requestTokenwithAuth() {
 function requestTokenWithRequest() {
   return new Promise(function (resolve, reject) {
     const arcgisTokenURL =
-      configuration.appTokenBaseURL + configuration.appTokenPath;
+      process.env.APP_TOKEN_BASE_URI + process.env.APP_TOKEN_PATH;
     let parameters = new formData();
     parameters.append("f", "json");
     parameters.append("client_id", process.env.CLIENT_ID);
     parameters.append("client_secret", process.env.CLIENT_SECRET);
     parameters.append("grant_type", "client_credentials");
-    parameters.append("expiration", configuration.tokenExpirationMinutes);
+    parameters.append("expiration", process.env.TOKEN_EXPIRATION_MINUTES);
+
+    console.log("fetch url", arcgisTokenURL);
 
     fetch(arcgisTokenURL, { method: "POST", body: parameters })
       .then(function (response) {

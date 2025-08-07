@@ -29,6 +29,7 @@ webServer.use(Express.urlencoded({ extended: true }));
  */
 function isClientAuthorized(request) {
   // verify the correct session id is in the request
+  console.log(`nonce: ${request.body.nonce} force: ${request.body.force}`);
   const nonce = request.body.nonce;
   return nonce == "1234";
 }
@@ -43,7 +44,7 @@ var clientsession = ClientSession({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: configuration.tokenExpirationMinutes * 60000, // convert minutes to milliseconds
+    maxAge: process.env.TOKEN_EXPIRATION_MINUTES * 60000, // convert minutes to milliseconds
   },
 
   // store session data in a secure, encrypted file
@@ -51,7 +52,7 @@ var clientsession = ClientSession({
   // at the end of every request the state of `request.session`
   // will be saved back to disk.
   store: new FileStore({
-    ttl: configuration.tokenExpirationMinutes * 60, // convert minutes to seconds
+    ttl: process.env.TOKEN_EXPIRATION_MINUTES * 60, // convert minutes to seconds
     retries: 1,
     secret: process.env.ENCRYPTION_KEY,
 
