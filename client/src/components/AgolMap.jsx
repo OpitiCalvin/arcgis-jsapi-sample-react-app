@@ -5,7 +5,7 @@ import esriConfig from "@arcgis/core/config"
 import { useRef, useEffect, useState } from 'react';
 import { requestApplicationToken } from '../utils/auth';
 
-const PortalMap = () => {
+const AgolMap = () => {
     const mapDiv = useRef(null);
     const [view, setView] = useState(null);
 
@@ -18,7 +18,7 @@ const PortalMap = () => {
 
     const setupMapView = () => {
       if (mapDiv.current) {
-        esriConfig.portalUrl = import.meta.env.VITE_PORTAL_URL;
+        esriConfig.portalUrl = import.meta.env.VITE_AGOL_URL;
         const webmap = new WebMap({
           portalItem: {
             id: import.meta.env.VITE_WEBMAP_ID,
@@ -30,24 +30,21 @@ const PortalMap = () => {
           map: webmap
         });
 
-        const layerList = new LayerList({
-          view: view,
-          collapsed: true
-        })
-
         setView(view);
 
         view.when(() => {
-          console.log("view loaded");         
-        });
+          console.log("view loaded");
 
-        view.ui.add(layerList, {
-          position: 'top-right'
-        })
+          new LayerList({
+            view,
+            container: "layers-container"
+          });
+        });
       }
     }
 
     useEffect(() => {
+      // setupMapView();
       // geta token and render the map
       requestApplicationToken()
       .then(function(response) {
@@ -55,7 +52,6 @@ const PortalMap = () => {
       }).catch(function(error){
         showErrorMessage(error)
       })
-      // setupMapView();
     }, [mapDiv]);
   return (
     <div className='mapDiv' ref={mapDiv}>
@@ -63,4 +59,4 @@ const PortalMap = () => {
   )
 }
 
-export default PortalMap;
+export default AgolMap;

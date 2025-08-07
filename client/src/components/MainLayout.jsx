@@ -6,9 +6,7 @@ function MainLayout({children}) {
   return (
     <Fragment>
       <Header />
-      <main className="grid">
       {children}
-      </main>
       <Footer/>
     </Fragment>
   );
