@@ -4,7 +4,7 @@ import IdentityManager from "@arcgis/core/identity/IdentityManager";
 let tokenExpiration = null;
 let lastGoodToken = null;
 
-const appTokenURI = "https://api.opititechgeolabs.com/auth"
+const appTokenURI = `${window.location.origin}/api/auth`
 
 export const requestApplicationToken = () => {
     return new Promise(function (resolve, reject) {
