@@ -24,7 +24,7 @@ function App() {
 
       const webmap = new WebMap({
         portalItem: {
-          id: "fb0a2396d6d146a09c2908a5fa253b3c",
+          id: "974c6641665a42bf8a57da08e607bb6f",
         },
       });
 
