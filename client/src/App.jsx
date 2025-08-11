@@ -1,8 +1,7 @@
 import MainLayout from "./components/MainLayout"
 import './App.css'
-// import MapFeatureLayer from "./components/MapFeatureLayer"
 import PortalMap from "./components/PortalMap"
-// import StarterMap from "./components/StarterMap"
+import StarterMap from "./components/StarterMap"
 
 function App() {
 
@@ -10,7 +9,6 @@ function App() {
       <MainLayout>
       {/* <StarterMap/> */}
       <PortalMap />
-      {/* <MapFeatureLayer /> */}
       </MainLayout>
   )
 }
