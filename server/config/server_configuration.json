@@ -1,0 +1,4 @@
+{
+  "cacheFile": "./.ArcGISTokenCache.json",
+  "logFile": "./debug.log"
+}

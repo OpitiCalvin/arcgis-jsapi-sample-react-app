@@ -1,0 +1,15 @@
+@API_URI = https://api.opititechgeolabs.com
+
+###
+GET {{API_URI}}/
+
+###
+
+POST {{API_URI}}/auth HTTP/1.1
+Content-Type: application/json
+
+{
+     "nonce": 1234
+}
+
+###
